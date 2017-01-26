@@ -1,0 +1,21 @@
+{
+  "name": "startup-kit-node-workload",
+  "version": "0.0.1",
+  "private": true,
+  "license": "Apache 2.0",
+  "scripts": {
+    "start": "node app"
+  },
+  "engines": {
+    "node": "6.9.1"
+  },
+  "dependencies": {
+    "aws-sdk": "2.6.12",
+    "body-parser": "1.15.2",
+    "express": "4.14.0",
+    "knex": "0.12.6",
+    "mysql": "2.11.1",
+    "nconf": "0.8.4",
+    "pg": "6.1.0"
+  }
+}
