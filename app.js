@@ -32,6 +32,8 @@ app.get('/todo/all', api.getAll);
 
 app.post('/todo/new', api.createNewTodo);
 
+app.get('/todo/s3url/:bucket/:key', api.getS3Url);
+
 
 // BEGIN LISTENING
 

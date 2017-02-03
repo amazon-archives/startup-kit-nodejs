@@ -4,11 +4,37 @@ const nconf = require('nconf'),
       AWS = require('aws-sdk');
 
 AWS.config.update({region: nconf.get('AWS_REGION')});
+
+// S3 functions
+
+const s3 = new AWS.S3();
+
+exports.getPresignedUrlForS3 = (bucket, key, res) => {
+
+    let params = { Bucket: bucket, Key: key, Expires: 600 };
+    
+    s3.getSignedUrl('putObject', params, (err, url) => {
+        
+        if (err) {
+          console.error(err);
+          return res.json({'error' : `[AWS S3 ERROR] ${err}`});
+        }
+        
+        let msg = `RETRIEVED S3 PRESIGNED URL = ${url}`;
+        console.log(msg);
+        res.json({'message' : msg});
+    });
+}
+
+
+// CloudWatch metrics functions
+
 const cloudWatch = new AWS.CloudWatch();
 
-    
 exports.publishMetric = (metricName, latency) => {
 
+    // NOTE:  this does not perform batching, which would be necessary in
+    // a production environment with a substantial amount of traffic
     cloudWatch.putMetricData(metricDataHelper(metricName, latency))
               .on('error', (err, res) => console.log(`Error publishing metrics: ${err}`))
               .send();    
