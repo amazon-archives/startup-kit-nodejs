@@ -22,7 +22,9 @@ sql script in the sql directory of the project.
 
 - At the top level of the project directory, include a config.json.  To select
 a database type, use 'mysql' for MySQL or 'pg' for Postgres as the value for the
-DB_CLIENT key.  An example where Postgres is selected as the database:  
+DB_CLIENT key.  To enable JWT-based token authentication to protect API routes,
+set the value of the AUTH_ENABLED key to true.  An example where Postgres is 
+selected as the database:  
 
 ```
     {
@@ -32,7 +34,10 @@ DB_CLIENT key.  An example where Postgres is selected as the database:
         "DB_PASSWORD": "changeme",
         "DB_NAME": "StartupDB",
         "DB_MAX_CONNS": 100,
-        "AWS_REGION": "us-east-1"  
+        "AWS_REGION": "us-east-1",
+        "AUTH_ENABLED": false,
+        "AUTH_JWT_SECRET": "my-secret",
+        "AUTH_JWT_TOKENTIME":  6000
     }
 ```
 
