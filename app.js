@@ -9,31 +9,12 @@ nconf.argv()
 
 // set up express and routes
 const express = require('express'),
-      bodyParser = require('body-parser'),
-      api = require('./routes/api');
+      bodyParser = require('body-parser');
 
 const app = express();
 app.use(bodyParser.json());
 
-
-// ROUTE DECLARATIONS
-
-app.get('/todo/active', api.getActive);
-
-app.put('/todo/active', api.updateActive);
-
-app.get('/todo/complete', api.getComplete);
-
-app.put('/todo/complete', api.markComplete);
-
-app.delete('/todo/complete', api.deleteComplete);
-
-app.get('/todo/all', api.getAll);
-
-app.post('/todo/new', api.createNewTodo);
-
-app.get('/todo/s3url/:bucket/:key', api.getS3Url);
-
+require('./routes/api')(app, express);
 
 // BEGIN LISTENING
 
