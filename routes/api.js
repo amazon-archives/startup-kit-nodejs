@@ -21,7 +21,7 @@ passport.use(new Strategy( (username, password, done) => {
 }));
 
 // EXPORT ROUTES
-module.exports = function(app, express) {
+module.exports = (app, express) => {
 
     // create a group of API routes
     const apiRoutes = express.Router();
@@ -36,15 +36,16 @@ module.exports = function(app, express) {
 
         db.knex.insert(item)
             .into('todo')
+            .returning('todo_id')
             .then( (result) => {
-                let msg = 'Successfully created todo';
+                let msg = `Successfully created todo item with id ${result}`;
                 console.log(msg);
                 aws.publishMetric('CREATE_NEW', process.hrtime(hrbegin));
-                res.json({'message' : msg});
+                res.status(200).json({'message' : msg});
             }) 
             .catch( (err) => {
                 console.error(err);
-                res.json({'error' : `[DB ERROR] ${err}`});
+                res.status(500).json({'error' : `[DB ERROR] ${err}`});
             });
     });
 
@@ -58,11 +59,11 @@ module.exports = function(app, express) {
             .then( (rows) => {
                 console.log(`Active ToDo items found: ${rows.length}`);
                 aws.publishMetric('GET_ACTIVE', process.hrtime(hrbegin));
-                res.send(rows);
+                res.status(200).send(rows);
             }) 
             .catch( (err) => {
                 console.error(err);
-                res.json({'error' : `[DB ERROR] ${err}`});
+                res.status(500).json({'error' : `[DB ERROR] ${err}`});
             });
     });
 
@@ -79,11 +80,11 @@ module.exports = function(app, express) {
                 let msg = 'Successfully updated todo';
                 console.log(msg);
                 aws.publishMetric('UPDATE_ACTIVE', process.hrtime(hrbegin));
-                res.json({'message' : msg});
+                res.status(200).json({'message' : msg});
             })
             .catch( (err) => {
                 console.error(err);
-                res.json({'error' : `[DB ERROR] ${err}`});
+                res.status(500).json({'error' : `[DB ERROR] ${err}`});
             });
     });
 
@@ -97,11 +98,11 @@ module.exports = function(app, express) {
             .then( (rows) => {
                 console.log(`Total number of ToDo items found: ${rows.length}`);
                 aws.publishMetric('GET_ALL', process.hrtime(hrbegin));
-                res.send(rows);
+                res.status(200).send(rows);
             })
             .catch( (err) => {
                 console.error(err);
-                res.json({'error' : `[DB ERROR] ${err}`});
+                res.status(500).json({'error' : `[DB ERROR] ${err}`});
             });
     });
 
@@ -115,11 +116,11 @@ module.exports = function(app, express) {
             .then( (rows) => {
                 console.log(`Complete ToDo items found: ${rows.length}`);
                 aws.publishMetric('GET_COMPLETE', process.hrtime(hrbegin));
-                res.send(rows);
+                res.status(200).send(rows);
             })
             .catch( (err) => {
                 console.error(err);
-                res.json({'error' : `[DB ERROR] ${err}`});
+                res.status(500).json({'error' : `[DB ERROR] ${err}`});
             });
     });
 
@@ -136,11 +137,11 @@ module.exports = function(app, express) {
                 let msg = `Successfully marked complete ${result} todos`;
                 console.log(msg);
                 aws.publishMetric('MARK_COMPLETE', process.hrtime(hrbegin));
-                res.json({'message' : msg});
+                res.status(200).json({'message' : msg});
             })
             .catch( (err) => {
                 console.error(err);
-                res.json({'error' : `[DB ERROR] ${err}`});
+                res.status(500).json({'error' : `[DB ERROR] ${err}`});
             });
     });
 
@@ -156,11 +157,11 @@ module.exports = function(app, express) {
                 let msg = `Successfully deleted ${result} completed todos`;
                 console.log(msg);
                 aws.publishMetric('DELETE_COMPLETE', process.hrtime(hrbegin));
-                res.json({'message' : msg});
+                res.status(200).json({'message' : msg});
             }) 
             .catch( (err) => {
                 console.error(err);
-                res.json({'error' : `[DB ERROR] ${err}`});
+                res.status(500).json({'error' : `[DB ERROR] ${err}`});
             });
     });
 
@@ -172,7 +173,7 @@ module.exports = function(app, express) {
         if ( !bucket || !key ) {
             let msg = '[API ERROR] S3 BUCKET PATH PARAMETERS MISSING';
             console.error(msg);
-            return res.json({'error' : msg});
+            return res.status(500).json({'error' : msg});
         }
 
         // Handled by the AWS utility module in the utility directory.
@@ -182,14 +183,15 @@ module.exports = function(app, express) {
         aws.getPresignedUrlForS3(bucket, key, res);
     });   
     
-    // AUTH-RELATED ROUTES
+    // REGISTER AND LOGIN A USER
     apiRoutes.post('/auth', passport.initialize(), 
                             passport.authenticate('local', { session: false, scope: [] }),
                             auth.serialize, 
                             auth.generateToken, 
                             auth.respondWithToken);
 
-    apiRoutes.get('/me', authenticate, function(req, res) {
+    // CHECK USER INFORMATION
+    apiRoutes.get('/me', authenticate, (req, res) => {
         
         res.status(200).json(req.user);
     });
