@@ -18,8 +18,22 @@ SET time_zone = "+00:00";
 CREATE TABLE IF NOT EXISTS `todo` (
   `todo_id` bigint(20) NOT NULL AUTO_INCREMENT,
   `active` bool NOT NULL,
-  `description` varchar(800) NOT NULL,
+  `description` varchar(1024) NOT NULL,
   PRIMARY KEY (`todo_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `users`
+--
+
+CREATE TABLE IF NOT EXISTS `users` ( 
+    `user_id` bigint(20) NOT NULL AUTO_INCREMENT, 
+    `username` varchar(64) UNIQUE, 
+    `pwd` varchar(512) NOT NULL,
+    `first_name` varchar(64),
+    `last_name` varchar(64),
+    `email` varchar(128),
+    PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 
