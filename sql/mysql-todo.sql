@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS `users` (
     `first_name` varchar(64),
     `last_name` varchar(64),
     `email` varchar(128),
+    `refresh_token` varchar(256) NOT NULL,
     PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
