@@ -173,7 +173,7 @@ module.exports = (app, express) => {
         if ( !bucket || !key ) {
             let msg = '[API ERROR] S3 BUCKET PATH PARAMETERS MISSING';
             console.error(msg);
-            return res.status(500).json({'error' : msg});
+            return res.status(400).json({'error' : msg});
         }
 
         // Handled by the AWS utility module in the utility directory.
@@ -187,8 +187,17 @@ module.exports = (app, express) => {
     apiRoutes.post('/auth', passport.initialize(), 
                             passport.authenticate('local', { session: false, scope: [] }),
                             auth.serialize, 
-                            auth.generateToken, 
+                            auth.generateAccessToken, 
+                            auth.generateRefreshToken, 
                             auth.respondWithToken);
+    
+    // USE REFRESH TOKEN TO GET ACCESS TOKEN (request should include user id and refresh token)
+    apiRoutes.post('/token', auth.validateRefreshToken, 
+                             auth.generateAccessToken, 
+                             auth.respondWithToken);
+    
+    // TODO: REVOKE REFRESH TOKEN (LIMIT TO USERS WITH ADMIN ROLE)
+    // apiRoutes.post('/token/revoke', ...
 
     // CHECK USER INFORMATION
     apiRoutes.get('/me', authenticate, (req, res) => {
