@@ -275,6 +275,11 @@
       "from": "cryptiles@>=2.0.0 <3.0.0",
       "resolved": "https://registry.npmjs.org/cryptiles/-/cryptiles-2.0.5.tgz"
     },
+    "crypto": {
+      "version": "0.0.3",
+      "from": "crypto@latest",
+      "resolved": "https://registry.npmjs.org/crypto/-/crypto-0.0.3.tgz"
+    },
     "crypto-browserify": {
       "version": "1.0.9",
       "from": "crypto-browserify@1.0.9",
