@@ -4,13 +4,13 @@
 const nconf = require('nconf'),
       jwt = require('jsonwebtoken'),
       db = require('./db'),
-      bcrypt = require('bcrypt');
+      bcrypt = require('bcrypt'),
+      crypto = require('crypto');
 
 // constants for JWT, time is in seconds
 const SECRET = nconf.get('AUTH_JWT_SECRET');
 const TOKENTIME = nconf.get('AUTH_JWT_TOKENTIME')
 
-// NOTE:  currently there is no provision for refresh tokens
 
 exports.manager = {
   
@@ -108,15 +108,63 @@ exports.serialize = (req, res, next) => {
     });
 }
 
-exports.generateToken = (req, res, next) => {
-  
-    req.token = jwt.sign({
+exports.generateAccessToken = (req, res, next) => {
+
+    req.token = req.token || {};
+    req.token.accessToken = jwt.sign({
         id: req.user.id,
         }, SECRET, {
         expiresIn: TOKENTIME
     });
 
     next();
+}
+
+exports.generateRefreshToken = (req, res, next) => {
+  
+    req.token.refreshToken = req.user.id.toString() + '.' + 
+                             crypto.randomBytes(40).toString('hex');
+    
+    // store token encrypted
+    let cipher = crypto.createCipher('aes-256-ctr', SECRET);
+    let encrypted = cipher.update(req.token.refreshToken,'utf8','base64');
+    encrypted += cipher.final('base64');
+    
+    db.knex('users')
+        .where('user_id', req.user.id)
+        .update('refresh_token', encrypted)
+        .then( (result) => {
+            console.log(`Generated refresh token for user id ${req.user.id}`);
+            next();
+        })
+        .catch( (err) => {
+            console.error(err);
+            next(err);
+        });
+}
+
+exports.validateRefreshToken = (req, res, next) => {
+
+    db.knex('users')
+        .where('user_id', req.body.id)
+        .then( (rows) => {
+        
+            // decrypt returned token
+            let decipher = crypto.createDecipher('aes-256-ctr', SECRET);
+            let decrypted = decipher.update(rows[0].refresh_token,'base64','utf8');
+            decrypted += decipher.final('utf8');
+        
+            if (decrypted !== req.body.refreshToken) {
+                return res.status(401).json({'error' : 'NO MATCH FOR REFRESH TOKEN'});
+            }
+            console.log(`Refresh token matched for user ${rows[0].user_id}`);
+            req.user = {id: rows[0].user_id};
+            next();
+        }) 
+        .catch( (err) => {
+            console.error(err);
+            next(err);
+        });
 }
 
 exports.respondWithToken = (req, res) => {
