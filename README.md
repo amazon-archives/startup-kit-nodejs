@@ -1,4 +1,4 @@
-# startup-kit-nodejs
+# AWS Startup Kit Node.js Workload
 
 
 An example AWS Elastic Beanstalk project built using Node.js as the platform. It
@@ -11,7 +11,9 @@ To create an Elastic Beanstalk app using this code:
 - First make sure you have created VPC and database stacks in CloudFormation using the [Startup Kit templates](https://github.com/awslabs/startup-kit-templates).
 - Next, after reading through the notes below and making sure the app runs locally,
 create a S3 bucket (or use an existing one) and put your zipped code in the bucket.
-Finally, use the Startup Kit app template to create a stack for the app, selecting
+When zipping the code, be sure to zip/compress the contents of the of the folder EXCEPT
+the node_modules directory.  Do not zip the top level folder/directory itself.  
+- Finally, use the Startup Kit app template to create a stack for the app, selecting
 'node' as the stack type.
 
 ### STEPS TO BUILD AND RUN LOCALLY
@@ -21,9 +23,9 @@ local computer using standard ports.  Set up the database using the applicable
 sql script in the sql directory of the project. 
 
 - At the top level of the project directory, include a config.json.  To select
-a database type, use 'mysql' for MySQL or 'pg' for Postgres as the value for the
+a database type, use 'mysql' for MySQL or 'pg' for PostgreSQL as the value for the
 DB_CLIENT key.  To enable JWT-based token authentication to protect API routes,
-set the value of the AUTH_ENABLED key to true.  An example where Postgres is 
+set the value of the AUTH_ENABLED key to true.  An example where PostgreSQL is 
 selected as the database:  
 
 ```
