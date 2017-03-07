@@ -22,10 +22,10 @@ the node_modules directory.  Do not zip the top level folder/directory itself.
 local computer using standard ports.  Set up the database using the applicable 
 sql script in the sql directory of the project. 
 
-- At the top level of the project directory, include a config.json.  To select
+- At the top level of the project directory, include a config.json file.  To select
 a database type, use 'mysql' for MySQL or 'pg' for PostgreSQL as the value for the
 DB_CLIENT key.  To enable JWT-based token authentication to protect API routes,
-set the value of the AUTH_ENABLED key to true.  An example where PostgreSQL is 
+set the value of the AUTH_ENABLED key to true.  An example file where PostgreSQL is 
 selected as the database:  
 
 ```
@@ -46,6 +46,18 @@ selected as the database:
 - To build locally: at the command line in the top level directory, run: npm install.
 This command relies on the included package.json file to install all necessary
 dependencies.
+
+- To test:  run the following curl commands.  The first fetches all items in the database,
+while the second adds items.  When testing against an Elastic Beanstalk environment,
+replace localhost:8081 with the Elastic Beanstalk environment URL.  If you enable auth,
+include an Authorization header in your curl command.  
+
+```
+    curl http://localhost:8081/api/todo/all
+    
+    curl -X POST -H 'Content-Type: application/json' -d '{"active": true, "description": "What TODO next?"}' http://localhost:8081/api/todo/new
+
+```
 
 ### DEPLOYMENT NOTES
 
