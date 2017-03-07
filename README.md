@@ -21,6 +21,10 @@ runs locally, create a S3 bucket (or use an existing one) and put your zipped co
 in the bucket.  
 - Create the app: use the Startup Kit app template to create an app stack, selecting
 'node' as the stack type.
+- Make sure your database is ready:  Connect to your RDS database and create a schema/
+database there with the name you provided when you created the database stack.  Then
+run the relevant sql script from the sql directory, either for MySQL or PostgreSQL, to
+create the actual tables.  
 
 ### STEPS TO BUILD AND RUN LOCALLY
 
