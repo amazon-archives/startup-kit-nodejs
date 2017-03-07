@@ -8,12 +8,18 @@ and database setup on AWS, or as a starting point for your own projects.
 ### LAUNCHING THE APP ON AWS
 
 To create an Elastic Beanstalk app using this code:
-- First make sure you have created VPC and database stacks in CloudFormation using the [Startup Kit templates](https://github.com/awslabs/startup-kit-templates).
-- Next, after reading through the notes below and making sure the app runs locally,
-create a S3 bucket (or use an existing one) and put your zipped code in the bucket.
-When zipping the code, be sure to zip/compress the contents of the of the folder EXCEPT
-the node_modules directory.  Do not zip the top level folder/directory itself.  
-- Finally, use the Startup Kit app template to create a stack for the app, selecting
+- Create VPC and database stacks:  in CloudFormation using the [Startup Kit templates](https://github.com/awslabs/startup-kit-templates).
+- Zip the code:  you can do this using the following command inside the top level
+directory containing the source code:
+```
+    npm run zip
+```
+(Note: if zipping the code yourself, be sure to zip/compress the contents of the of
+the folder EXCEPT the node_modules directory.  Do NOT zip the top level folder/directory itself.)
+- Create a S3 bucket: after reading through the notes below and making sure the app
+runs locally, create a S3 bucket (or use an existing one) and put your zipped code 
+in the bucket.  
+- Create the app: use the Startup Kit app template to create an app stack, selecting
 'node' as the stack type.
 
 ### STEPS TO BUILD AND RUN LOCALLY
