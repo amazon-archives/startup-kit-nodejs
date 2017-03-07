@@ -4,7 +4,8 @@
   "private": true,
   "license": "Apache 2.0",
   "scripts": {
-    "start": "node app"
+    "start": "node app",
+    "zip": "zip --exclude=node_modules/* -r startup-kit-nodejs.zip *"
   },
   "engines": {
     "node": "6.9.1"
