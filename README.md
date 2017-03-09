@@ -9,6 +9,10 @@ and database setup on AWS, or as a starting point for your own projects.
 
 To create an Elastic Beanstalk app using this code:
 - Create VPC and database stacks:  in CloudFormation using the [Startup Kit templates](https://github.com/awslabs/startup-kit-templates).
+- Make sure your database is ready:  connect to your RDS database and create a schema/
+database there with the name you provided when you created the database stack.  Then
+run the relevant sql script (MySQL or PostgreSQL) from the sql directory to create the
+actual tables. 
 - Zip the code:  you can do this using the following command inside the top level
 directory containing the source code:
 ```
@@ -20,17 +24,13 @@ the folder EXCEPT the node_modules directory.  Do NOT zip the top level folder/d
 runs locally, create a S3 bucket (or use an existing one) and put your zipped code 
 in the bucket.  
 - Create the app: use the Startup Kit app template to create an app stack, selecting
-'node' as the stack type.
-- Make sure your database is ready:  Connect to your RDS database and create a schema/
-database there with the name you provided when you created the database stack.  Then
-run the relevant sql script from the sql directory, either for MySQL or PostgreSQL, to
-create the actual tables.  
+'node' as the stack type. 
 
 ### STEPS TO BUILD AND RUN LOCALLY
 
 - Database:  either a MySQL or PostgreSQL database should be installed on your
 local computer using standard ports.  Set up the database using the applicable 
-sql script in the sql directory of the project. 
+sql script (MySQL or PostgreSQL) in the sql directory of the project. 
 
 - At the top level of the project directory, include a config.json file.  To select
 a database type, use 'mysql' for MySQL or 'pg' for PostgreSQL as the value for the
