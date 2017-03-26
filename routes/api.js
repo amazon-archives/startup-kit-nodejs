@@ -31,7 +31,6 @@ module.exports = (app, express) => {
     // CREATE NEW ITEM
     apiRoutes.post('/todo/new', checkAuth, (req, res) => {
 
-        let hrbegin = process.hrtime();
         let item = req.body;
 
         db.knex.insert(item)
@@ -40,7 +39,6 @@ module.exports = (app, express) => {
             .then( (result) => {
                 let msg = `Successfully created todo item with id ${result}`;
                 console.log(msg);
-                aws.publishMetric('CREATE_NEW', process.hrtime(hrbegin));
                 res.status(200).json({'message' : msg});
             }) 
             .catch( (err) => {
@@ -52,13 +50,10 @@ module.exports = (app, express) => {
     // GET ACTIVE ITEMS ONLY
     apiRoutes.get('/todo/active', checkAuth, (req, res) => {
 
-        let hrbegin = process.hrtime();
-
         db.knex('todo')
             .where('active', 1)
             .then( (rows) => {
                 console.log(`Active ToDo items found: ${rows.length}`);
-                aws.publishMetric('GET_ACTIVE', process.hrtime(hrbegin));
                 res.status(200).send(rows);
             }) 
             .catch( (err) => {
@@ -70,7 +65,6 @@ module.exports = (app, express) => {
     // UPDATE AN ACTIVE ITEM WITH NEW DESCRIPTION ETC.
     apiRoutes.put('/todo/active', checkAuth, (req, res) => {
 
-        let hrbegin = process.hrtime();
         let item = req.body;
 
         db.knex('todo')
@@ -79,7 +73,6 @@ module.exports = (app, express) => {
             .then( (result) => {
                 let msg = 'Successfully updated todo';
                 console.log(msg);
-                aws.publishMetric('UPDATE_ACTIVE', process.hrtime(hrbegin));
                 res.status(200).json({'message' : msg});
             })
             .catch( (err) => {
@@ -91,13 +84,10 @@ module.exports = (app, express) => {
     // GET ALL ITEMS, ACTIVE AND COMPLETE
     apiRoutes.get('/todo/all', checkAuth, (req, res) => {
 
-        let hrbegin = process.hrtime();
-
         db.knex.select()
             .table('todo')
             .then( (rows) => {
                 console.log(`Total number of ToDo items found: ${rows.length}`);
-                aws.publishMetric('GET_ALL', process.hrtime(hrbegin));
                 res.status(200).send(rows);
             })
             .catch( (err) => {
@@ -109,13 +99,10 @@ module.exports = (app, express) => {
     // GET COMPLETE ITEMS ONLY
     apiRoutes.get('/todo/complete', checkAuth, (req, res) => {
 
-        let hrbegin = process.hrtime();
-
         db.knex('todo')
             .where('active', 0)
             .then( (rows) => {
                 console.log(`Complete ToDo items found: ${rows.length}`);
-                aws.publishMetric('GET_COMPLETE', process.hrtime(hrbegin));
                 res.status(200).send(rows);
             })
             .catch( (err) => {
@@ -127,7 +114,6 @@ module.exports = (app, express) => {
     // MARK AN ACTIVE ITEM COMPLETE
     apiRoutes.put('/todo/complete', checkAuth, (req, res) => {
 
-        let hrbegin = process.hrtime();
         let item = req.body;
 
         db.knex('todo')
@@ -136,7 +122,6 @@ module.exports = (app, express) => {
             .then( (result) => {
                 let msg = `Successfully marked complete ${result} todos`;
                 console.log(msg);
-                aws.publishMetric('MARK_COMPLETE', process.hrtime(hrbegin));
                 res.status(200).json({'message' : msg});
             })
             .catch( (err) => {
@@ -148,7 +133,6 @@ module.exports = (app, express) => {
     // DELETE ALL COMPLETED ITEMS
     apiRoutes.delete('/todo/complete', checkAuth, (req, res) => {
 
-        let hrbegin = process.hrtime();
         let item = req.body;
 
         db.knex('todo').where('active', 0)
@@ -156,7 +140,6 @@ module.exports = (app, express) => {
             .then( (result) => {
                 let msg = `Successfully deleted ${result} completed todos`;
                 console.log(msg);
-                aws.publishMetric('DELETE_COMPLETE', process.hrtime(hrbegin));
                 res.status(200).json({'message' : msg});
             }) 
             .catch( (err) => {
