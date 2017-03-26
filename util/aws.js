@@ -31,36 +31,30 @@ exports.getPresignedUrlForS3 = (bucket, key, res) => {
 
 const cloudWatch = new AWS.CloudWatch();
 
-exports.publishMetric = (metricName, latency) => {
+// NOTE:  this does not perform batching, which would be necessary for metrics
+// that need to be published frequently, e.g. multiple times per second
+exports.publishMetric = (metricName) => {
 
-    // NOTE:  this does not perform batching, which would be necessary in
-    // a production environment with a substantial amount of traffic
-    cloudWatch.putMetricData(metricDataHelper(metricName, latency))
+    cloudWatch.putMetricData(metricDataHelper(metricName))
               .on('error', (err, res) => console.log(`Error publishing metrics: ${err}`))
               .send();    
 }
 
-function metricDataHelper(metricName, latency) {
+function metricDataHelper(metricName) {
 
-  let params = {
-    MetricData: [ 
-     {
-      MetricName: `${metricName}_COUNT`, 
-      Timestamp: new Date,
-      Unit: 'Count',
-      Value: 1.0
-     },
-     {
-      MetricName: `${metricName}_LATENCY`, 
-      Timestamp: new Date,
-      Unit: 'Milliseconds',
-      Value: ((latency[0] * 1000.0) + latency[1]/1000000)
-     },
-    ],
-    Namespace: 'STARTUP_KIT/API'  
-  }
+    let params = {
+        MetricData: [ 
+         {
+          MetricName: `${metricName}_COUNT`, 
+          Timestamp: new Date,
+          Unit: 'Count',
+          Value: 1.0
+         }
+        ],
+        Namespace: 'STARTUP_KIT/API'  
+    }
 
-  return params;
+    return params;
 }
 
 
