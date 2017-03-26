@@ -3,6 +3,7 @@
 
 const nconf = require('nconf'),
       jwt = require('jsonwebtoken'),
+      aws = require('./aws'),
       db = require('./db'),
       bcrypt = require('bcrypt'),
       crypto = require('crypto');
@@ -75,7 +76,8 @@ exports.manager = {
                         });
                     } else {
                         // deny access
-                        console.log('password DID NOT match');
+                        console.log('[LOGIN_FAILURE] password DID NOT match');
+                        aws.publishMetric('LOGIN_FAILURE');
                         cb(null, false);
                     }
                 });
