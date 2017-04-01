@@ -4,6 +4,7 @@
 const db = require('../util/db'),
       aws = require('../util/aws'),
       auth = require('../util/auth'),
+      log = require('../util/log'),
       nconf = require('nconf'),
       expressJwt = require('express-jwt'),
       passport = require('passport'),
@@ -38,11 +39,11 @@ module.exports = (app, express) => {
             .returning('todo_id')
             .then( (result) => {
                 let msg = `Successfully created todo item with id ${result}`;
-                console.log(msg);
+                log.info(msg);
                 res.status(200).json({'message' : msg});
             }) 
             .catch( (err) => {
-                console.error(err);
+                log.error(err);
                 res.status(500).json({'error' : `[DB ERROR] ${err}`});
             });
     });
@@ -53,11 +54,11 @@ module.exports = (app, express) => {
         db.knex('todo')
             .where('active', 1)
             .then( (rows) => {
-                console.log(`Active ToDo items found: ${rows.length}`);
+                log.info(`Active ToDo items found: ${rows.length}`);
                 res.status(200).send(rows);
             }) 
             .catch( (err) => {
-                console.error(err);
+                log.error(err);
                 res.status(500).json({'error' : `[DB ERROR] ${err}`});
             });
     });
@@ -72,11 +73,11 @@ module.exports = (app, express) => {
             .update({'description' : item.description, 'active' : item.active})
             .then( (result) => {
                 let msg = 'Successfully updated todo';
-                console.log(msg);
+                log.info(msg);
                 res.status(200).json({'message' : msg});
             })
             .catch( (err) => {
-                console.error(err);
+                log.error(err);
                 res.status(500).json({'error' : `[DB ERROR] ${err}`});
             });
     });
@@ -87,11 +88,11 @@ module.exports = (app, express) => {
         db.knex.select()
             .table('todo')
             .then( (rows) => {
-                console.log(`Total number of ToDo items found: ${rows.length}`);
+                log.info(`Total number of ToDo items found: ${rows.length}`);
                 res.status(200).send(rows);
             })
             .catch( (err) => {
-                console.error(err);
+                log.error(err);
                 res.status(500).json({'error' : `[DB ERROR] ${err}`});
             });
     });
@@ -102,11 +103,11 @@ module.exports = (app, express) => {
         db.knex('todo')
             .where('active', 0)
             .then( (rows) => {
-                console.log(`Complete ToDo items found: ${rows.length}`);
+                log.info(`Complete ToDo items found: ${rows.length}`);
                 res.status(200).send(rows);
             })
             .catch( (err) => {
-                console.error(err);
+                log.error(err);
                 res.status(500).json({'error' : `[DB ERROR] ${err}`});
             });
     });
@@ -121,11 +122,11 @@ module.exports = (app, express) => {
             .update('active', 0)
             .then( (result) => {
                 let msg = `Successfully marked complete ${result} todos`;
-                console.log(msg);
+                log.info(msg);
                 res.status(200).json({'message' : msg});
             })
             .catch( (err) => {
-                console.error(err);
+                log.error(err);
                 res.status(500).json({'error' : `[DB ERROR] ${err}`});
             });
     });
@@ -139,11 +140,11 @@ module.exports = (app, express) => {
             .del()
             .then( (result) => {
                 let msg = `Successfully deleted ${result} completed todos`;
-                console.log(msg);
+                log.info(msg);
                 res.status(200).json({'message' : msg});
             }) 
             .catch( (err) => {
-                console.error(err);
+                log.error(err);
                 res.status(500).json({'error' : `[DB ERROR] ${err}`});
             });
     });
@@ -155,7 +156,7 @@ module.exports = (app, express) => {
         let key = req.params.key;
         if ( !bucket || !key ) {
             let msg = '[API ERROR] S3 BUCKET PATH PARAMETERS MISSING';
-            console.error(msg);
+            log.error(msg);
             return res.status(400).json({'error' : msg});
         }
 

@@ -5,6 +5,7 @@ const nconf = require('nconf'),
       jwt = require('jsonwebtoken'),
       aws = require('./aws'),
       db = require('./db'),
+      log = require('./log'),
       bcrypt = require('bcrypt'),
       crypto = require('crypto');
 
@@ -34,12 +35,12 @@ exports.manager = {
                     .into('users')
                     .returning('user_id')
                     .then( (result) => {
-                        console.log(`Successfully created user with id ${result}`);
+                        log.info(`Successfully created user with id ${result}`);
                         user.id = result[0];
                         cb(null, user);
                     }) 
                     .catch( (err) => {
-                        console.error(err);
+                        log.error(err);
                         cb(null, err);
             });
         }); 
@@ -53,7 +54,7 @@ exports.manager = {
                 
                 // if no such user, then register user; otherwise, log in
                 if (0 === rows.length) {
-                    console.log('No such user, registering new user');
+                    log.info('No such user, registering new user');
                     cb(null, true);
                     return;
                 }
@@ -66,7 +67,7 @@ exports.manager = {
 
                     if (doesMatch) {
                         // log in
-                        console.log('password matched');
+                        log.info('password matched');
                         cb(null, {
                             id: rows[0].user_id,
                             firstname: rows[0].first_name,
@@ -76,14 +77,14 @@ exports.manager = {
                         });
                     } else {
                         // deny access
-                        console.log('[LOGIN_FAILURE] password DID NOT match');
+                        log.info('[LOGIN_FAILURE] password DID NOT match');
                         aws.publishMetric('LOGIN_FAILURE');
                         cb(null, false);
                     }
                 });
             }) 
             .catch( (err) => {
-                console.error(err);
+                log.error(err);
                 res.status(500).json({'error' : `[DB ERROR] ${err}`});
             });
       
@@ -136,11 +137,11 @@ exports.generateRefreshToken = (req, res, next) => {
         .where('user_id', req.user.id)
         .update('refresh_token', encrypted)
         .then( (result) => {
-            console.log(`Generated refresh token for user id ${req.user.id}`);
+            log.info(`Generated refresh token for user id ${req.user.id}`);
             next();
         })
         .catch( (err) => {
-            console.error(err);
+            log.error(err);
             next(err);
         });
 }
@@ -159,12 +160,12 @@ exports.validateRefreshToken = (req, res, next) => {
             if (decrypted !== req.body.refreshToken) {
                 return res.status(401).json({'error' : 'NO MATCH FOR REFRESH TOKEN'});
             }
-            console.log(`Refresh token matched for user ${rows[0].user_id}`);
+            log.info(`Refresh token matched for user ${rows[0].user_id}`);
             req.user = {id: rows[0].user_id};
             next();
         }) 
         .catch( (err) => {
-            console.error(err);
+            log.error(err);
             next(err);
         });
 }

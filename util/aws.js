@@ -1,7 +1,8 @@
 "use strict";
 
 const nconf = require('nconf'),
-      AWS = require('aws-sdk');
+      AWS = require('aws-sdk'),
+      log = require('./log');
 
 AWS.config.update({region: nconf.get('AWS_REGION')});
 
@@ -16,12 +17,12 @@ exports.getPresignedUrlForS3 = (bucket, key, res) => {
     s3.getSignedUrl('putObject', params, (err, url) => {
         
         if (err) {
-          console.error(err);
+          log.error(err);
           return res.json({'error' : `[AWS S3 ERROR] ${err}`});
         }
         
         let msg = `RETRIEVED S3 PRESIGNED URL = ${url}`;
-        console.log(msg);
+        log.info(msg);
         res.json({'message' : msg});
     });
 }
@@ -36,7 +37,7 @@ const cloudWatch = new AWS.CloudWatch();
 exports.publishMetric = (metricName) => {
 
     cloudWatch.putMetricData(metricDataHelper(metricName))
-              .on('error', (err, res) => console.log(`Error publishing metrics: ${err}`))
+              .on('error', (err, res) => log.error(`Error publishing metrics: ${err}`))
               .send();    
 }
 

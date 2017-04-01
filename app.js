@@ -1,11 +1,14 @@
 "use strict";
 
+
+const log = require('./util/log');
+
 // nconf configures the variable overriding hierarchy:
 // command line -> environment variables -> config file
 const nconf = require('nconf');
 nconf.argv()
-    .env()
-    .file({ file:'config.json'});
+     .env()
+     .file({ file:'config.json'});
 
 // set up Express and routes
 const express = require('express'),
@@ -21,7 +24,7 @@ app.use(responseTime( (req, res, time) => {
                 .toUpperCase()
                 .replace(/[:\.]/g, '')
                 .replace(/\//g, '_');
-    console.log('for API call ' + stat + ' response time = ' + time);
+    log.info(`API call ${stat} response time = ${time}`);
 }));
 
 // CORS enablement
@@ -40,7 +43,7 @@ require('./routes/api')(app, express);
 
 // BEGIN LISTENING
 app.listen(8081);
-console.log('Listening on port 8081 . . . .');
+log.info('Listening on port 8081 . . . .');
 
 
 
