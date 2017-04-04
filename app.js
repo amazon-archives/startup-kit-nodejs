@@ -24,7 +24,7 @@ app.use(responseTime( (req, res, time) => {
                 .toUpperCase()
                 .replace(/[:\.]/g, '')
                 .replace(/\//g, '_');
-    log.info(`API call ${stat} response time = ${time}`);
+    log.info(`${stat}_latency ${time}`);
 }));
 
 // CORS enablement
