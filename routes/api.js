@@ -25,12 +25,12 @@ passport.use(new Strategy( (username, password, done) => {
 module.exports = (app, express) => {
 
     // create a group of API routes
-    const apiRoutes = express.Router();
+    const router = express.Router();
     // set url for API group routes
-    app.use('/api', apiRoutes);
+    app.use('/', router);
     
     // CREATE NEW ITEM
-    apiRoutes.post('/todo/new', checkAuth, (req, res) => {
+    router.post('/api/todo/new', checkAuth, (req, res) => {
 
         let item = req.body;
 
@@ -49,7 +49,7 @@ module.exports = (app, express) => {
     });
 
     // GET ACTIVE ITEMS ONLY
-    apiRoutes.get('/todo/active', checkAuth, (req, res) => {
+    router.get('/api/todo/active', checkAuth, (req, res) => {
 
         db.knex('todo')
             .where('active', 1)
@@ -64,7 +64,7 @@ module.exports = (app, express) => {
     });
 
     // UPDATE AN ACTIVE ITEM WITH NEW DESCRIPTION ETC.
-    apiRoutes.put('/todo/active', checkAuth, (req, res) => {
+    router.put('/api/todo/active', checkAuth, (req, res) => {
 
         let item = req.body;
 
@@ -83,7 +83,7 @@ module.exports = (app, express) => {
     });
 
     // GET ALL ITEMS, ACTIVE AND COMPLETE
-    apiRoutes.get('/todo/all', checkAuth, (req, res) => {
+    router.get('/api/todo/all', checkAuth, (req, res) => {
 
         db.knex.select()
             .table('todo')
@@ -98,7 +98,7 @@ module.exports = (app, express) => {
     });
 
     // GET COMPLETE ITEMS ONLY
-    apiRoutes.get('/todo/complete', checkAuth, (req, res) => {
+    router.get('/api/todo/complete', checkAuth, (req, res) => {
 
         db.knex('todo')
             .where('active', 0)
@@ -113,7 +113,7 @@ module.exports = (app, express) => {
     });
 
     // MARK AN ACTIVE ITEM COMPLETE
-    apiRoutes.put('/todo/complete', checkAuth, (req, res) => {
+    router.put('/api/todo/complete', checkAuth, (req, res) => {
 
         let item = req.body;
 
@@ -132,7 +132,7 @@ module.exports = (app, express) => {
     });
 
     // DELETE ALL COMPLETED ITEMS
-    apiRoutes.delete('/todo/complete', checkAuth, (req, res) => {
+    router.delete('/api/todo/complete', checkAuth, (req, res) => {
 
         let item = req.body;
 
@@ -150,7 +150,7 @@ module.exports = (app, express) => {
     });
 
     // GET AN S3 UPLOAD URL FOR UPLOADING AN OBJECT FOR A TODO ITEM
-    apiRoutes.get('/todo/s3url/:bucket/:key', checkAuth, (req, res) => {
+    router.get('/api/todo/s3url/:bucket/:key', checkAuth, (req, res) => {
 
         let bucket = req.params.bucket;
         let key = req.params.key;
@@ -168,7 +168,7 @@ module.exports = (app, express) => {
     });   
     
     // REGISTER AND LOGIN A USER
-    apiRoutes.post('/auth', passport.initialize(), 
+    router.post('/api/auth', passport.initialize(),
                             passport.authenticate('local', { session: false, scope: [] }),
                             auth.serialize, 
                             auth.generateAccessToken, 
@@ -176,19 +176,24 @@ module.exports = (app, express) => {
                             auth.respondWithToken);
     
     // USE REFRESH TOKEN TO GET ACCESS TOKEN (request should include user id and refresh token)
-    apiRoutes.post('/token', auth.validateRefreshToken, 
+    router.post('/api/token', auth.validateRefreshToken,
                              auth.generateAccessToken, 
                              auth.respondWithToken);
     
     // TODO: REVOKE REFRESH TOKEN (LIMIT TO USERS WITH ADMIN ROLE)
-    // apiRoutes.post('/token/revoke', ...
+    // router.post('/api/token/revoke', ...
 
     // CHECK USER INFORMATION
-    apiRoutes.get('/me', authenticate, (req, res) => {
+    router.get('/api/me', authenticate, (req, res) => {
         
         res.status(200).json(req.user);
     });
     
+    // ROUTE FOR HEALTH CHECK
+    router.get('/', (req, res) => {
+
+        res.status(200).json({'HEALTH_CHECK' : 'OK'});
+    });
     
 } // end module exports of routes
 
