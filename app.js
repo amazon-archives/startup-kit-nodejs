@@ -10,6 +10,12 @@ nconf.argv()
      .env()
      .file({ file:'config.json'});
 
+nconf.defaults({
+  AUTH_ENABLED: false,
+  AUTH_JWT_SECRET: 'my-secret',
+  AUTH_JWT_TOKENTIME: 6000,
+});
+
 // set up Express and routes
 const express = require('express'),
       bodyParser = require('body-parser'),
