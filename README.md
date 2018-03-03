@@ -8,10 +8,15 @@ and database setup on AWS, or as a starting point for your own projects.
 ### LAUNCHING THE APP ON AWS
 
 To create an Elastic Beanstalk app on AWS using this code:
-- Create VPC and database stacks in CloudFormation using the [Startup Kit templates](https://github.com/awslabs/startup-kit-templates).
-- Connect to your RDS database with a database client.  Then, using the database name
-you provided when you created the database stack, run the command CREATE DATABASE [your-
-database-name] if you don't see that name in the database list.  Switch to that database.  
+- Using the [Startup Kit templates](https://github.com/awslabs/startup-kit-templates),
+launch AWS CloudFormation stacks that include the following templates:  vpc.cfn.yml, 
+bastion.cfn.yml, and db.cfn.yml.
+- Connect to your RDS database with a database client.  For an example of how to connect
+to a database in a private subnet using a bastion host, see the following blog post:
+https://aws.amazon.com/blogs/startups/building-a-vpc-with-the-aws-startup-kit/.
+- Then, using the database name you provided when you created the database stack, run the 
+command CREATE DATABASE [your-database-name] if you don't see that name in the database list.  
+Switch to that database.  
 - Run the relevant sql script (MySQL or PostgreSQL) from the sql directory of this 
 GitHub repository to create the actual database tables. 
 - At the top level of the project directory, include a config.json file.  To select
@@ -42,7 +47,14 @@ directory containing the source code:
 ```
 (Note: if zipping the code without this command, be sure to zip/compress the contents of
 the folder EXCEPT the node_modules directory.  Do NOT zip the top level folder/directory itself, zip the contents only.)
-- Follow the directions in Step 4, **Create the app**, in the README of the [Startup Kit templates](https://github.com/awslabs/startup-kit-templates). Select 'node' as the stack type. 
+- Either create a S3 bucket to hold your app code, or make sure you have an existing S3 bucket you can use. Put your code in the bucket.
+- Launch the elastic-beanstalk.cfn.yml template using AWS CloudFormation, and fill in parameters as follows.  
+- Pick a relevant stack name.
+- For AppS3Bucket, enter the name of the S3 bucket that contains your code.
+- For AppS3Key, enter the name of your code file in the S3 bucket. For example, if your app is a Node.js app, it would be the name of your Node.js code zip file.
+- For NetworkStackName, enter the name of the VPC stack you created.
+- For DatabaseStackName enter the name of the database stack you created.
+- IMPORTANT: before clicking the Create button in the CloudFormation console, go to the Capabilities section just above the button, and be sure you have checked the checkbox acknowledging that IAM resources will be created.
 
 ### STEPS TO BUILD AND RUN LOCALLY
 
