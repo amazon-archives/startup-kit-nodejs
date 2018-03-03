@@ -1,9 +1,16 @@
 # AWS Startup Kit Node.js Workload
 
 
-An example AWS Elastic Beanstalk project built using Node.js as the platform. It
-includes a RESTful API created with Express. Use this example to test out your VPC
-and database setup on AWS, or as a starting point for your own projects.
+A sample AWS Elastic Beanstalk project built using Node.js as the platform. It
+provides a RESTful API created with Express, for a simple use case:  a TODO app. 
+Use this sample to test out your VPC, app, and database setup on AWS. In other words,
+you can use the sample app to make sure the different parts of your infrastructure
+are communicating with each other. Afterwards, simply replace this sample app with
+your own app.  
+
+Follow the instructions directly below to launch the sample app on AWS, or if you
+would prefer to check how it runs locally first, skip to the section **STEPS TO 
+BUILD AND RUN LOCALLY**.
 
 ### LAUNCHING THE APP ON AWS
 
